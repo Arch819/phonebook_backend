@@ -5,21 +5,14 @@ const path = require("path");
 const fs = require("fs/promises");
 
 const { SECRET_KEY } = process.env;
-const avatarDir = path.join(
-  __dirname,
-  "../",
-  "public",
-  "photo"
-);
+const avatarDir = path.join(__dirname, "../", "public", "photo");
 
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
   const userFind = await User.findOne({ email });
 
   if (userFind) {
-    res
-      .status(409)
-      .json({ message: "User with this email registered" });
+    res.status(409).json({ message: "User with this email registered" });
     return;
   }
   const photo = gravatar.url(email);
@@ -41,26 +34,20 @@ const signup = async (req, res) => {
   const token = jwt.sign(payload, SECRET_KEY);
   await User.findByIdAndUpdate(newUser._id, { token });
 
-  res
-    .status(201)
-    .json({ token, user: { email, name, photo } });
+  res.status(201).json({ token, user: { email, name, photo } });
 };
 
 const signin = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    res
-      .status(401)
-      .json({ message: "Email or password is invalid" });
+    res.status(401).json({ message: "Email or password is invalid" });
     return;
   }
 
   const checkPassword = await user.checkPassword(password);
   if (!checkPassword) {
-    res
-      .status(401)
-      .json({ message: "Email or password is invalid" });
+    res.status(401).json({ message: "Email or password is invalid" });
     return;
   }
   const payload = {
@@ -98,7 +85,7 @@ const updatePhoto = async (req, res) => {
   const resultUpdate = path.join(avatarDir, filename);
   await fs.rename(tempUpload, resultUpdate);
 
-  const avatarURL = path.join("avatars", filename);
+  const avatarURL = path.join("photo", filename);
 
   await User.findByIdAndUpdate(_id, { avatarURL });
 

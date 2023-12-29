@@ -4,11 +4,22 @@ const router = express.Router();
 const contactSchema = require("../schemas/contactsSchema");
 const validationBody = require("../decoration/validationBody");
 const validationId = require("../middlewares/validationId");
+const authenticate = require("../middlewares/authenticate");
 
-router.get("/", ctrl.getContactsController);
+router.get("/", authenticate, ctrl.getContactsController);
 
-router.post("/", validationBody(contactSchema), ctrl.addedContactController);
+router.post(
+  "/",
+  authenticate,
+  validationBody(contactSchema),
+  ctrl.addedContactController
+);
 
-router.delete("/:contactId", validationId, ctrl.deleteContactController);
+router.delete(
+  "/:contactId",
+  authenticate,
+  validationId,
+  ctrl.deleteContactController
+);
 
 module.exports = router;
